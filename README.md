@@ -25,7 +25,10 @@ The BRCA and ROSMAP dataset can be found in [MOGONET](https://github.com/txWang/
 If you utilize the resources in this repository and need to cite them, please refer to the following publication:
 
 ```
-Yuxing Lu, Rui Peng, Lingkai Dong, Kun Xia, Renjie Wu, Shuai Xu, Jinzhuo Wang. "Multiomics dynamic learning enables personalized diagnosis and prognosis for pancancer and cancer subtypes." Briefings in Bioinformatics, Volume 24, Issue 6, November 2023. [Link](https://doi.org/10.1093/bib/bbad378).
+Yuxing Lu, Rui Peng, Lingkai Dong, Kun Xia, Renjie Wu, Shuai Xu, Jinzhuo Wang.
+"Multiomics dynamic learning enables personalized diagnosis and prognosis for pancancer and cancer subtypes."
+Briefings in Bioinformatics, Volume 24, Issue 6, November 2023.
+[Link](https://doi.org/10.1093/bib/bbad378).
 ```
 
 
