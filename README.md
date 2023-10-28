@@ -21,8 +21,12 @@ git clone git@github.com:YuxingLu613/HTML.git
 The BRCA and ROSMAP dataset can be found in [MOGONET](https://github.com/txWang/MOGONET). All the preprocessed datasets can be found in [HTML Datasets](https://drive.google.com/drive/folders/1_tJ2ekhTmWp7ZcRVjUVGx0cqGMRKEhNo?usp=share_link). The pan-cancer dataset can be fetched in [TCGA](https://www.cancer.gov/ccg/research/genome-sequencing/tcga) program .
 
 
+## Citation
+If you utilize the resources in this repository and need to cite them, please refer to the following publication:
 
-
+```
+Yuxing Lu, Rui Peng, Lingkai Dong, Kun Xia, Renjie Wu, Shuai Xu, Jinzhuo Wang. "Multiomics dynamic learning enables personalized diagnosis and prognosis for pancancer and cancer subtypes." Briefings in Bioinformatics, Volume 24, Issue 6, November 2023. [Link](https://doi.org/10.1093/bib/bbad378).
+```
 
 
 
