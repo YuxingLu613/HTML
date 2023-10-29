@@ -1,7 +1,9 @@
 # Highly Trustworthy Multiomics Learning (HTML)
+![Version](https://img.shields.io/badge/version-1.0.0-blue)
+![Build Status](https://img.shields.io/badge/build-passing-brightgreen)
+![Stars](https://img.shields.io/github/stars/YuxingLu613/HTML?style=social)
 
-==This is the code repository of the paper [Multiomics dynamic learning enables personalized diagnosis and prognosis for pancancer and cancer subtypes.](https://doi.org/10.1093/bib/bbad378)
- ==
+This is the code repository of the paper [Multiomics dynamic learning enables personalized diagnosis and prognosis for pancancer and cancer subtypes.](https://academic.oup.com/bib/article/24/6/bbad378/7330495)
 
 ## Introduction
 Accurate cancer diagnosis and prognosis are crucial for improving medical care delivery. Multiomics data offers a comprehensive cellular view of cancer, but is often leveraged with static models of late-fusion integration and infers certain cancer. Here, we present HTML (Highly Trustworthy Multiomics Learning), a dynamic multimodal integration method, and show how to apply HTML to integrate multiomics data for pan-cancer and cancer-subtype diagnosis and prognosis. Compared with static models which have fixed computational graphs and parameters at inference, HTML can adapt structures to each input, leading to notable advantages of individualized analysis. We show HTML filters out sample-adaptive features, aligns modality-wise representations, produces interpretable predictions, and identifies important biomarkers. Comprehensive assessments on a 33-type pan-cancer dataset and 12 cancer-subtype datasets reveal HTML's superiority over other state-of-the-art approaches by a large margin. These results suggest that HTML is an effective tool for personalizing cancer therapeutic strategies and biological pathogenesis discovery.
