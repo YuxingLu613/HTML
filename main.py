@@ -1,45 +1,52 @@
+import os
+import pandas as pd
 from train.train import train_kfold
 from preprocess.preprocessing import preprocess_data
-import pandas as pd
-import numpy as np
-import json
-import os
 
-if __name__ == "__main__":
-    # Initialize results dictionary and dataframe
+def initialize_results():
+    """Initialize results dictionary and dataframe."""
     results = {}
     results_df = pd.DataFrame(columns=[
-                              "Data Folder", "Accuracy", "F1-macro", "F1-weighted", "AUC score", "PRC score", "Uncertainty"])
+        "Data Folder", "Accuracy", "F1-macro", "F1-weighted", 
+        "AUC score", "PRC score", "Uncertainty"
+    ])
+    return results, results_df
 
-    # Loop through data folders
-    # for data_folder in ["COADREAD", "ESCA", "GBMLGG", "SARC", "STAD", "STES", "THCA", "UCEC", "BRCA", "KIPAN", "LGG", "ROSMAP"]:
-    for data_folder in ["COADREAD"]:
-        print(f"Processing {data_folder}...")
+def preprocess_and_train(data_folder, model_path):
+    """Preprocess data and execute k-fold training.
+    
+    Args:
+        data_folder (str): Name of the data folder to process.
+        model_path (str): Path to save model checkpoints.
+        
+    Returns:
+        dict: Results of the training.
+    """
+    print(f"Processing {data_folder}...")
+    
+    preprocess_data(data_folder)
+    
+    data_folder_path = os.path.join("..", "data", data_folder)
+    testonly = False
+    result = train_kfold(data_folder_path, model_path, testonly)
+    
+    return result
 
-        # Preprocess data
-        preprocess_data(data_folder)
-
-        # Set paths and options for training
-        data_folder_path = f"../data/{data_folder}/"
-        modelpath = "../results/checkpoints"
-        testonly = False
-
-        # Train k-fold and store results
-        result = train_kfold(data_folder_path, modelpath, testonly)
+def main():
+    """Main function to execute preprocessing and training."""
+    
+    # Initialization
+    results, results_df = initialize_results()
+    
+    # Defining model path and dataset names
+    model_path = os.path.join("..", "results", "checkpoints")
+    datasets = ["COADREAD"]  # Extend this list for processing multiple datasets
+    
+    for data_folder in datasets:
+        result = preprocess_and_train(data_folder, model_path)
         results[data_folder] = result
+        
+    # Further code to handle results, save to files, etc. can be added here.
 
-    # Write results to JSON file
-    with open("../results/HTML.json", "w") as f:
-        json.dump(results, f)
-
-    # Populate results dataframe
-    for key, value in results.items():
-        new_row = [key]
-        for key2, val2 in value.items():
-            mean = np.mean(val2)
-            std_dev = np.std(val2)
-            print("{:.2f} ({:.2f})".format(mean, std_dev))
-            new_row.append("{:.2f} ({:.2f})".format(mean, std_dev))
-        results_df.loc[len(results_df)] = new_row
-
-    results_df.to_csv("../results/HTML.csv")
+if __name__ == "__main__":
+    main()

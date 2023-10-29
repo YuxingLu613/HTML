@@ -79,7 +79,6 @@ class HTMLModel(nn.Module):
             uncertainty=torch.tensor(0)
         
         if infer:
-            
             return MMlogit, uncertainty.cpu().detach().numpy()
         
         MMLoss = MMLoss + torch.mean(self.criterion(Prediction[0],label))

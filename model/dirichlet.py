@@ -1,8 +1,16 @@
 import torch
 import torch.nn.functional as F
 
-
 def KL(alpha, c):
+    """Compute the KL divergence between Dirichlet distribution and a uniform Dirichlet distribution.
+    
+    Args:
+        alpha (Tensor): Parameter of the Dirichlet distribution.
+        c (int): Number of classes or categories.
+        
+    Returns:
+        Tensor: Computed KL divergence.
+    """
     beta = torch.ones((1, c))
     S_alpha = torch.sum(alpha, dim=1, keepdim=True)
     S_beta = torch.sum(beta, dim=1, keepdim=True)
@@ -14,13 +22,24 @@ def KL(alpha, c):
     return kl
 
 def ce_loss(p, alpha, c, global_step, annealing_step):
+    """Compute a modified cross-entropy loss incorporating Dirichlet distribution characteristics.
+    
+    Args:
+        p (Tensor): Predicted probabilities.
+        alpha (Tensor): Parameter of the Dirichlet distribution.
+        c (int): Number of classes or categories.
+        global_step (int): Current global step during training.
+        annealing_step (int): Step at which annealing effect is maximized.
+        
+    Returns:
+        Tensor: Computed modified cross-entropy loss.
+    """
     S = torch.sum(alpha, dim=1, keepdim=True)
     E = alpha - 1
     label = F.one_hot(p, num_classes=c)
     A = torch.sum(label * (torch.digamma(S) - torch.digamma(alpha)), dim=1, keepdim=True)
-
+    
     annealing_coef = min(1, global_step / annealing_step)
-
     alp = E * (1 - label) + 1
     B = annealing_coef * KL(alp, c)
 

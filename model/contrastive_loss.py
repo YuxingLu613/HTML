@@ -6,23 +6,30 @@ import torch.nn.functional as F
 
 class InfoNCELoss(nn.Module):
     def __init__(self, tau=1.0):
+        """Initialize the InfoNCE Loss module.
+        
+        Args:
+            tau (float, optional): Temperature parameter. Defaults to 1.0.
+        """
         super().__init__()
         self.tau = tau
 
     def forward(self, concatenated, pos_indices, neg_indices):
-        # Apply softmax to the concatenated tensor along the embedding dimension
+        """Forward pass of the InfoNCE Loss.
+        
+        Args:
+            concatenated (Tensor): Concatenated tensor.
+            pos_indices (Tensor): Indices for positive samples.
+            neg_indices (Tensor): Indices for negative samples.
+            
+        Returns:
+            Tensor: Computed loss.
+        """
         softmax = F.softmax(concatenated / self.tau, dim=1)
-
-        # Separate the positive and negative softmax vectors
         pos_softmax = softmax.index_select(dim=0, index=pos_indices)
         neg_softmax = softmax.index_select(dim=0, index=neg_indices)
-
-        # Compute the dot product similarity between the positive samples and the negative samples
         dot_product = torch.mm(pos_softmax, neg_softmax.transpose(0, 1))
-
-        # Compute the loss as the negative log of the dot product similarity
         loss = -torch.mean(torch.log(dot_product + 1e-8))
-
         return loss
 
 

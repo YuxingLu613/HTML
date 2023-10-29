@@ -3,49 +3,80 @@ import numpy as np
 import torch
 import torch.nn.functional as F
 import torch.optim as optim
-import torch.optim.lr_scheduler as lr_scheduler
 from sklearn.metrics import accuracy_score, f1_score, roc_auc_score, average_precision_score
-from collections import Counter
+from torch.optim import lr_scheduler
 from model.html_model import HTMLModel
 from preprocess.preprocessing import prepare_data_kfold
 from utils.utils import seed_it, save_checkpoint, load_checkpoint, computeAUROC, computeAUPRC
 from tqdm import trange
+from collections import Counter
 
+# Check CUDA availability and set seed for reproducibility
 cuda = torch.cuda.is_available()
-
 seed_it(40)
 
 def train_epoch(data_list, label, model, optimizer):
+    """Handle a single training epoch.
+    
+    Args:
+        data_list (list): List of data tensors.
+        label (Tensor): Label tensor.
+        model (nn.Module): The PyTorch model.
+        optimizer (Optimizer): The optimizer for training.
+        
+    Returns:
+        float: The training loss.
+    """
     model.train()
     optimizer.zero_grad()
     loss, _, uncertainty = model(data_list, label)
+    
+    # L1 regularization
     l1_loss = 0.
     lambda_ = 0.0001
     for param in model.parameters():
         l1_loss += torch.abs(param).sum()
     loss = torch.mean(loss) + lambda_ * l1_loss
+    
     loss.backward()
     optimizer.step()
+    
+    return loss.item()
 
 def test_epoch(data_list, model):
+    """Evaluate the model on test data.
+    
+    Args:
+        data_list (list): List of test data tensors.
+        model (nn.Module): The PyTorch model.
+        
+    Returns:
+        Tensor: Model logits.
+        Tensor: Model uncertainty.
+    """
     model.eval()
     with torch.no_grad():
-        logit, uncertainty = model.infer(data_list)
-        prob = F.softmax(logit, dim=1).data.cpu().numpy()
-    return prob, uncertainty
-    
-
-from preprocess.preprocessing import prepare_data_kfold
-from model import HTMLModel
-from utils.utils import computeAUROC, computeAUPRC, save_checkpoint, load_checkpoint
+        logit, uncertainty = model(data_list)
+    return logit, uncertainty
 
 def train_kfold(data_folder, modelpath, testonly):
+    """Train and evaluate the model using k-fold cross-validation.
     
-    test_inverval = 1
+    Args:
+        data_folder (str): Path to the data folder.
+        modelpath (str): Path to save model checkpoints.
+        testonly (bool): Whether to only evaluate without training.
+        
+    Returns:
+        dict: Best observed metrics across all folds.
+    """
+    # Parameters
+    test_interval = 1
     hidden_dim = [1000]
     num_epoch = 2000
     lr = 1e-4
 
+    # Prepare data
     kfold_data = prepare_data_kfold(data_folder, k=5, modalities=[1, 2, 3])
     best_result = {"acc": [], "f1-macro": [], "f1-weighted": [], "auc": [], "prc": [], "uncertainty": []}
     
@@ -97,7 +128,7 @@ def train_kfold(data_folder, modelpath, testonly):
             for epoch in trange(num_epoch + 1):
                 train_epoch(data_tr_list, train_labels, model, optimizer)
                 scheduler.step()
-                if epoch % test_inverval == 0:
+                if epoch % test_interval == 0:
                     te_prob, uncertainty = test_epoch(data_test_list, model)
                     # print("\nTrain: Epoch {:d}".format(epoch))
                     if num_class == 2:
